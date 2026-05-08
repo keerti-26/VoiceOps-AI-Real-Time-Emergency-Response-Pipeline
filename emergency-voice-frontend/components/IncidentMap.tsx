@@ -36,8 +36,13 @@ export default function IncidentMap({
 
     let disposed = false;
 
+    const mapsKey = process.env.NEXT_PUBLIC_AZURE_MAPS_KEY;
+    console.log("Azure Maps Key present:", !!mapsKey);
+
     import("azure-maps-control").then((atlas) => {
+
       if (disposed || !containerRef.current) return;
+
 
       const map = new atlas.Map(containerRef.current, {
         center: [longitude, latitude],
@@ -93,7 +98,7 @@ export default function IncidentMap({
           map.events.add("click", resourceMarker, () => resourceMarker.togglePopup());
         });
       });
-    });
+    }).catch((err) => console.error("Azure Maps error:", err));
 
     return () => {
       disposed = true;
