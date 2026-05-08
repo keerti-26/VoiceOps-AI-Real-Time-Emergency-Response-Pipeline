@@ -6,6 +6,8 @@ A real-time voice emergency intake pipeline. Callers record audio in the browser
 - Frontend: [https://voice-ops-ai-real-time-emergency-re.vercel.app/](https://voice-ops-ai-real-time-emergency-re.vercel.app/)
 - Backend API: hosted on Render
 
+<img width="1807" height="953" alt="image" src="https://github.com/user-attachments/assets/1efe8b30-1781-4f02-b62a-6ddcd378917e" />
+
 ---
 
 ## Architecture
