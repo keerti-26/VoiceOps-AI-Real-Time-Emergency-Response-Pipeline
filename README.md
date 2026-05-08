@@ -79,7 +79,7 @@ Frontend also requires `NEXT_PUBLIC_AZURE_MAPS_KEY` in `emergency-voice-frontend
 8. **Play** — Frontend displays transcript, incident details, and auto-plays the AI audio response
 9. **Map** — An interactive Azure Maps view shows the incident location and nearby resources
 10. **End Session** — Session ends manually, or automatically after 60 seconds of inactivity
-[<img width="1807" height="953" alt="image" src="https://github.com/user-attachments/assets/1efe8b30-1781-4f02-b62a-6ddcd378917e" />]
+<img width="1807" height="953" alt="image" src="https://github.com/user-attachments/assets/1efe8b30-1781-4f02-b62a-6ddcd378917e" />
 
 ---
 
