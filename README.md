@@ -2,6 +2,10 @@
 
 A real-time voice emergency intake pipeline. Callers record audio in the browser, which is transcribed, analyzed by AI, stored as a structured incident in Azure Cosmos DB, and responded to with a synthesized voice reply. A dispatcher dashboard allows filtering and status management of all incidents.
 
+**Live Demo:**
+- Frontend: [https://voice-ops-ai-real-time-emergency-re.vercel.app/](https://voice-ops-ai-real-time-emergency-re.vercel.app/)
+- Backend API: hosted on Render
+
 ---
 
 ## Architecture
@@ -19,13 +23,39 @@ A real-time voice emergency intake pipeline. Callers record audio in the browser
 
 ---
 
-## Getting Started
+## How to Use
+
+1. Open the [live app](https://voice-ops-ai-real-time-emergency-re.vercel.app/)
+2. Click **Start New Session** to begin
+3. Click the **microphone button** to start recording your emergency
+4. Click the microphone button again to stop — the audio is automatically sent for processing
+5. The AI will respond with a follow-up question and speak the reply aloud
+6. Continue recording to provide additional details across multiple turns
+7. The session ends automatically after **60 seconds of inactivity**, or click **End Session** manually
+8. Once a location is detected, an interactive map shows the incident location and nearby resources (hospitals, fire stations, police)
+
+---
+
+## How It Works
+
+1. **Start Session** — A session document is created in Cosmos DB
+2. **Record** — Click the mic button to start; click again to stop and auto-send
+3. **Transcribe** — Backend converts the audio to WAV via FFmpeg, then sends to Azure Speech-to-Text
+4. **Extract** — Azure OpenAI parses the transcript into a structured incident (type, severity, location, injuries, etc.), using already-collected fields as context so it never re-asks
+5. **Enrich** — Location string is geocoded via Azure Maps; nearby hospitals, fire stations, and police are fetched within 5 km
+6. **Store** — Session document is upserted to Cosmos DB with all enriched fields
+7. **Respond** — Azure OpenAI generates a calm follow-up question or summary (max 5 turns); Azure TTS converts it to audio
+8. **Map** — An interactive Azure Maps view shows the incident location and nearby resources
+9. **End Session** — Ends manually or automatically after 60 seconds of inactivity
+
+---
+
+## Running Locally
 
 ### Prerequisites
 - Python 3.10+
 - Node.js 18+
 - Azure account with Speech, OpenAI, Cosmos DB, and Maps resources provisioned
-- Create `backend/.env` with your Azure credentials (see `.env` variable names below)
 
 ### Backend
 
@@ -47,38 +77,7 @@ npm run dev
 
 App runs on `http://localhost:3000`
 
-### Required Environment Variables (`backend/.env`)
-
-```
-AZURE_SPEECH_KEY=
-REGION=
-AZURE_OPENAI_KEY=
-AZURE_OPENAI_ENDPOINT=
-AZURE_OPENAI_API_VERSION=
-AZURE_OPENAI_DEPLOYMENT=
-AZURE_COSMOS_ENDPOINT=
-AZURE_COSMOS_KEY=
-AZURE_COSMOS_DATABASE=
-AZURE_COSMOS_CONTAINER=
-AZURE_MAPS_KEY=
-```
-
-Frontend also requires `NEXT_PUBLIC_AZURE_MAPS_KEY` in `emergency-voice-frontend/.env.local`.
-
----
-
-## How It Works
-
-1. **Start Session** — User clicks "Start New Session"; a session document is created in Cosmos DB
-2. **Record** — Click the mic button to start recording; click again to stop and auto-send
-3. **Transcribe** — Backend converts the browser WebM audio to PCM WAV via FFmpeg, then sends to Azure Speech-to-Text
-4. **Extract** — Azure OpenAI parses the transcript into a structured incident (type, severity, location, injuries, etc.), using already-collected fields as context so it never re-asks
-5. **Enrich** — Location string is geocoded via Azure Maps; nearby hospitals, fire stations, and police are fetched within 5 km
-6. **Store** — Session document is upserted to Cosmos DB with all enriched fields
-7. **Respond** — Azure OpenAI generates a calm, directive follow-up question or summary (max 5 turns); Azure TTS converts it to audio
-8. **Play** — Frontend displays transcript, incident details, and auto-plays the AI audio response
-9. **Map** — An interactive Azure Maps view shows the incident location and nearby resources
-10. **End Session** — Session ends manually, or automatically after 60 seconds of inactivity
+> Environment variables for Azure credentials must be configured in `backend/.env` and `emergency-voice-frontend/.env.local` before running locally.
 
 ---
 
@@ -89,8 +88,7 @@ Frontend also requires `NEXT_PUBLIC_AZURE_MAPS_KEY` in `emergency-voice-frontend
 | GET | `/` | Health check |
 | POST | `/sessions/start` | Create a new session/incident in Cosmos DB |
 | POST | `/sessions/{session_id}/voice-intake` | Full pipeline: audio → transcript → incident → TTS |
-| GET | `/sessions/{session_id}/end` | End session (GET variant) |
-| POST | `/sessions/{session_id}/end/` | End session (POST variant, used by idle timer) |
+| GET | `/sessions/{session_id}/end` | End session |
 | GET | `/incidents` | Fetch 20 most recent incidents |
 | GET | `/incidents/filter` | Filter by `?status=` and/or `?severity=` |
 | PUT | `/incidents/{incident_id}` | Update incident status via `?status=` |
@@ -99,7 +97,7 @@ Frontend also requires `NEXT_PUBLIC_AZURE_MAPS_KEY` in `emergency-voice-frontend
 
 ## Dispatcher Dashboard
 
-Navigate to `http://localhost:3000/incidents` to view the incident dashboard:
+Navigate to `/incidents` to view the dispatcher dashboard:
 
 - View all incoming incidents with severity and status badges
 - Filter by status (`new`, `in_review`, `escalated`, `closed`) and severity
@@ -117,6 +115,7 @@ Navigate to `http://localhost:3000/incidents` to view the incident dashboard:
 │   ├── location_enrichment.py   # Azure Maps geocoding (location string → lat/lng)
 │   ├── nearby_resources.py      # Azure Maps POI search (hospitals, fire, police)
 │   ├── schemas.py               # Pydantic data models
+│   ├── Dockerfile               # Docker config for Render deployment
 │   └── requirements.txt         # Python dependencies
 │
 ├── emergency-voice-frontend/
