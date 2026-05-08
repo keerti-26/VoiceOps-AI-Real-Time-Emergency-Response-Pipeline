@@ -24,7 +24,9 @@ session: dict = {}
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000"],
+    allow_origins=["http://localhost:3000",
+                   "https://voice-ops-ai-real-time-emergency-re.vercel.app/"
+        ],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"]
@@ -172,8 +174,8 @@ def end_session(session_id:str):
           raise HTTPException(status_code=404, detail=f"Session not found: {str(e)}")
 
 @app.get("/")
-def home():
-    return {"status": "Voice Emergency Pipeline is running"}
+def root():
+    return {"status": "ok", "service":"voiceops-backend"}
 
 
 @app.post("/sessions/{session_id}/voice-intake")
@@ -217,7 +219,7 @@ async def voice_intake(session_id:str, file: UploadFile = File(...)):
             )
         print("Transcribing with Azure...")
         result = recognizer.recognize_once_async().get()
-        
+
         # Release SDK objects immediately so Windows unlocks the file
         recognizer = None
         audio_config_stt = None

@@ -26,10 +26,12 @@ export default function Home() {
     }
   };
 
+  const API_BASE = process.env.NEXT_PUBLIC_API_BASE_URL;
+
   const resetIdleTimer = useCallback((currentSessionId: string) => {
     clearIdleTimer();
     idleTimerRef.current = setTimeout(async () => {
-      await fetch(`http://127.0.0.1:8000/sessions/${currentSessionId}/end/`, { method: "POST" });
+      await fetch(`${API_BASE}/sessions/${currentSessionId}/end/`, { method: "POST" });
       setsessionEnded(true);
       alert("Session ended due to 60 seconds of inactivity.");
     }, IDLE_TIMEOUT_MS);
@@ -80,7 +82,7 @@ export default function Home() {
         const formData = new FormData();
         formData.append("file", target, "emergency-audio.wav");
 
-        const response = await fetch(`http://127.0.0.1:8000/sessions/${sessionId}/voice-intake`, {
+        const response = await fetch(`${API_BASE}/sessions/${sessionId}/voice-intake`, {
           method: "POST",
           body: formData,
         });
@@ -136,7 +138,7 @@ export default function Home() {
 
   const startSession = async() => {
     try {
-      const response = await fetch ("http://127.0.0.1:8000/sessions/start", {
+      const response = await fetch (`${API_BASE}/sessions/start`, {
       method: "POST"
     })
       const data = await response.json();
@@ -153,7 +155,7 @@ export default function Home() {
       resetIdleTimer(data.session_id);
     } catch(error){
       console.error("failed to start session", error);
-      alert("Could not start session. Check backend logs.");
+      alert(`Could not start session: ${error instanceof Error ? error.message : String(error)}`);
     }
     
   };
@@ -161,7 +163,7 @@ export default function Home() {
   const endSession = async () => {
     if (!sessionId) return;
     clearIdleTimer();
-    await fetch(`http://127.0.0.1:8000/sessions/${sessionId}/end/`, { method: "POST" });
+    await fetch(`${API_BASE}/sessions/${sessionId}/end/`, { method: "POST" });
     setsessionEnded(true);
   };
 
