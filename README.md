@@ -7,6 +7,13 @@ A real-time voice emergency intake pipeline. Callers record audio in the browser
 - Backend API: hosted on Render
 
 <img width="1807" height="953" alt="image" src="https://github.com/user-attachments/assets/1efe8b30-1781-4f02-b62a-6ddcd378917e" />
+<img width="1577" height="804" alt="image" src="https://github.com/user-attachments/assets/33cf1f07-d6a5-4fb0-99b5-96c67f57532a" />
+<img width="1573" height="934" alt="image" src="https://github.com/user-attachments/assets/cd10d28f-580e-4ff3-9b7d-1a0c3fc90eca" />
+<img width="1823" height="619" alt="image" src="https://github.com/user-attachments/assets/8df9ac5c-6b9f-4f84-a78a-a3b34fba1853" />
+<img width="1869" height="549" alt="image" src="https://github.com/user-attachments/assets/3fd91281-1249-4f6a-9639-ef3cedf9b499" />
+<img width="1589" height="950" alt="image" src="https://github.com/user-attachments/assets/9af6997d-5ac8-4c25-ada5-7310461eb2ff" />
+
+
 
 ---
 
