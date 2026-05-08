@@ -105,11 +105,7 @@ export default function Home() {
         ]
         );
 
-        // if (data.audio_b64) {
-        //   const bytes = Uint8Array.from(atob(data.audio_b64), c => c.charCodeAt(0));
-        //   const blob = new Blob([bytes], { type: "audio/wav" });
-        //   setAudioUrl(URL.createObjectURL(blob));
-        // }
+        
         if (data.audio_b64) {
          const bytes = Uint8Array.from(atob(data.audio_b64), (c) =>
         c.charCodeAt(0)

@@ -103,10 +103,6 @@ def merge_incident_update(existing_incident:dict, new_data:dict, transcript:str)
         existing_incident["resolved"] = True
     else:
         existing_incident["resolved"] = False
-    
-    # existing_incident["counter"] = counter+1
-    
-    # print(existing_incident)
 
     return  existing_incident
 
@@ -183,11 +179,9 @@ def home():
 @app.post("/sessions/{session_id}/voice-intake")
 async def voice_intake(session_id:str, file: UploadFile = File(...)):
     temp_path = None
-    # counter = 0
     try:
         existing_incident = get_session_by_id(session_id)
         print(existing_incident)
-        # print(f"DEBUG fetched from DB — emergency_type: {existing_incident.get('emergency_type')}, missing_fields: {existing_incident.get('missing_fields')}")
 
         if existing_incident.get("session_status") == "ended":
             return {
@@ -199,7 +193,6 @@ async def voice_intake(session_id:str, file: UploadFile = File(...)):
         with tempfile.NamedTemporaryFile(delete=False, suffix=suffix) as temp_raw:
             temp_raw.write(content)
             temp_raw_path = temp_raw.name
-        # print(temp_raw_path)
 
         # Convert to WAV (PCM 16kHz mono) for Azure Speech SDK
         with tempfile.NamedTemporaryFile(delete=False, suffix=".wav") as temp_wav:
@@ -224,6 +217,7 @@ async def voice_intake(session_id:str, file: UploadFile = File(...)):
             )
         print("Transcribing with Azure...")
         result = recognizer.recognize_once_async().get()
+        
         # Release SDK objects immediately so Windows unlocks the file
         recognizer = None
         audio_config_stt = None
@@ -250,8 +244,7 @@ async def voice_intake(session_id:str, file: UploadFile = File(...)):
         incident = extract_incident_details(transcript, existing_incident)
         
         new_data = incident.model_dump()
-        # print("Existing Incident:",existing_incident)
-        # print("New Data:", new_data)
+       
         incident_dict = merge_incident_update(
              existing_incident=existing_incident,
              new_data=new_data,
@@ -273,33 +266,21 @@ async def voice_intake(session_id:str, file: UploadFile = File(...)):
                     )
 
                     incident_dict["nearby_resources"] = nearby_resources
-        # inc_id = f"INC-{uuid4().hex[:8].upper()}"
-
-        # incident_dict["id"] = inc_id
-        # incident_dict["incident_id"] = inc_id
-        # incident_dict["status"] = "new"
-        # incident_dict["created_at"] = datetime.now(timezone.utc).isoformat()
-
-        # print(f"DEBUG before upsert — emergency_type: {incident_dict.get('emergency_type')}, missing_fields: {incident_dict.get('missing_fields')}")
+        
         session[session_id] = incident_dict
-        # print(session)
+        
         container.upsert_item(incident_dict)
 
         # Build conversation history from previous turns
         history = incident_dict.get("transcript_history", [])
         conversation_messages = []
-        # print("History:", history)
+
         for turn in history[:-1]:  # all turns except the current one
-            # print("***3")
-            # print("turn:", turn)
-            # print("***3")
             conversation_messages.append({"role": "user", "content": turn["text"]})
-            # print("coversation message:", conversation_messages)
+        
             if turn.get("ai_response"):
                 conversation_messages.append({"role": "assistant", "content": turn["ai_response"]})
-                # print("***3")
-                # print("coversation message:", conversation_messages)
-
+        # Agent should ask upto 5 clarifying questions
         MAX_TURNS = 5
         turns_completed = len(incident_dict.get("transcript_history", []))
         if turns_completed >= MAX_TURNS:

@@ -3,6 +3,8 @@ uvicorn==0.29.0
 python-dotenv==1.0.1
 azure-cognitiveservices-speech==1.37.0
 python-multipart==0.0.9
-openai
-imageio-ffmpeg
+openai==2.33.0
+imageio-ffmpeg==0.6.0
 azure-cosmos
+azure-core==1.40.0
+requests==2.33.1
