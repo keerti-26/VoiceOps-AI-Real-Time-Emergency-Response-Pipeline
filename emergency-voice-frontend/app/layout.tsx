@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Roboto_Slab } from "next/font/google";
 import "./globals.css";
+import "azure-maps-control/dist/atlas.min.css";
 
 const geistSans = Roboto_Slab({
   variable: "--font-geist-sans",

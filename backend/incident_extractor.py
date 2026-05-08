@@ -15,7 +15,27 @@ client = AzureOpenAI(
 
 DEPLOYMENT = os.getenv("AZURE_OPENAI_DEPLOYMENT")
 
-def extract_incident_details(transcript:str)-> IncidentExtraction:
+def extract_incident_details(transcript: str, existing_incident: dict = None) -> IncidentExtraction:
+    already_known = ""
+    if existing_incident:
+        parts = []
+        # counter = counter+1
+        for field, label in [
+            ("emergency_type", "Emergency type"),
+            ("location", "Location"),
+            ("severity", "Severity"),
+            ("callback_number", "Callback number"),
+            ("injuries", "Injuries reported"),
+        ]:
+            val = existing_incident.get(field)
+            if val is not None and str(val).lower() not in ["unknown", "", "none"]:
+                parts.append(f"- {label}: {val}")
+        if parts:
+            already_known = (
+                "\n\nAlready known from earlier in this session (do NOT include these in missing_fields):\n"
+                + "\n".join(parts)
+            )
+    print(already_known)
     response = client.chat.completions.create(
         model = DEPLOYMENT,
         messages = [
@@ -38,23 +58,27 @@ def extract_incident_details(transcript:str)-> IncidentExtraction:
 
              Rules:
              - Do not invent missing details.
-             - If location is incomplete, include "location" in missing_fields.
+             - If any keyword appears in the transcript (medical, fire, crime, accident, natural_disaster) use it as emergency_type.
+             - Only add a field to missing_fields if it is genuinely absent from ALL context, including already-known values provided below.
+             - Never add already-known fields to missing_fields.
+             - If location is incomplete or absent, include "location" in missing_fields.
              - If callback number is missing, include "callback_number" in missing_fields.
              - Use critical for life-threatening situations like chest pain, unconsciousness, fire, active violence, severe bleeding.
-
             """
             },
             {
-               "role":"user",
-               "content":transcript
+               "role": "user",
+               "content": f"Latest caller message: {transcript}{already_known}"
             }
         ],
         temperature = 0.1
     )
     content = response.choices[0].message.content.strip()
+    # print("content:", content)
     if content.startswith("```"):
         content = content.split("```")[1]
         if content.startswith("json"):
             content = content[4:]
     parsed = json.loads(content)
+    # print("parsed:", parsed)
     return IncidentExtraction(**parsed)

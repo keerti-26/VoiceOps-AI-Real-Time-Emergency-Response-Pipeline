@@ -31,3 +31,4 @@ emergency-voice-frontend/.env.local
 emergency-voice-frontend/.env*.local
 
 CLAUDE.md
+PROPOSAL.md
