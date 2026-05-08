@@ -228,8 +228,8 @@ async def voice_intake(session_id:str, file: UploadFile = File(...)):
                 transcript = result.text
         else:
                 transcript = ""
-                cancellation = result.cancellation_details if hasattr(result, 'cancellation_details') else None
-                print(f"Speech Recognition failed: {result.reason}, details: {cancellation}")
+                cancellation = speechsdk.CancellationDetails(result)
+                print(f"Speech Recognition failed: {result.reason}, reason: {cancellation.reason}, error: {cancellation.error_details}")
 
         # Temp WAV no longer needed — delete before any early returns
         if temp_path and os.path.exists(temp_path):
