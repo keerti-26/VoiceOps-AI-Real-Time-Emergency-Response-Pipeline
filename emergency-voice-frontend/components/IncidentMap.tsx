@@ -2,6 +2,7 @@
 
 import { useEffect, useRef } from "react";
 import type * as AtlasType from "azure-maps-control";
+import "azure-maps-control/dist/atlas.min.css";
 
 type NearbyResource = {
   type: string;
