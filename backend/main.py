@@ -25,7 +25,7 @@ session: dict = {}
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["http://localhost:3000",
-                   "https://voice-ops-ai-real-time-emergency-re.vercel.app/"
+                   "https://voice-ops-ai-real-time-emergency-re.vercel.app"
         ],
     allow_credentials=True,
     allow_methods=["*"],
