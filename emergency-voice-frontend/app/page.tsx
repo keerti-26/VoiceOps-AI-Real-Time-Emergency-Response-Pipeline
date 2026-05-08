@@ -27,6 +27,7 @@ export default function Home() {
   };
 
   const API_BASE = process.env.NEXT_PUBLIC_API_BASE_URL;
+  console.log("API_BASE:", API_BASE);
 
   const resetIdleTimer = useCallback((currentSessionId: string) => {
     clearIdleTimer();
