@@ -3,6 +3,7 @@
 A real-time voice emergency intake pipeline. Callers record audio in the browser, which is transcribed, analyzed by AI, stored as a structured incident in Azure Cosmos DB, and responded to with a synthesized voice reply. A dispatcher dashboard allows filtering and status management of all incidents.
 
 **Live Demo:**
+(Sorry AI audio is not recorded in the video unfortunately)
 - Demo Video: https://www.loom.com/share/8e611695924141dcbea6c88c074293e0
 - Frontend: [https://voice-ops-ai-real-time-emergency-re.vercel.app/](https://voice-ops-ai-real-time-emergency-re.vercel.app/)
 - Backend API: hosted on Render
